@@ -1,9 +1,9 @@
 //Book Class: represents a book
 class Book {
-    constructor(title, author, isbn) {
+    constructor(title, year, id) {
         this.title = title;
-        this.author = author;
-        this.isbn = isbn;
+        this.year = year;
+        this.id = id;
     }
 }
 //UI class: handle UI tasks
@@ -19,8 +19,8 @@ class UI {
         const row = document.createElement("tr");
         row.innerHTML = `
         <td>${book.title}</td>
-        <td>${book.author}</td>
-        <td>${book.isbn}</td>
+        <td>${book.year}</td>
+        <td>${book.id}</td>
         <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>
         `;
         list.appendChild(row);
@@ -64,11 +64,11 @@ class Store {
         localStorage.setItem('books', JSON.stringify(books));
     }
 
-    static removeBook(isbn) {
+    static removeBook(id) {
         const books = Store.getBooks();
 
         books.forEach((book, index) => {
-            if (book.isbn === isbn) {
+            if (book.id === id) {
                 books.splice(index, 1);
             }
         });
@@ -83,17 +83,17 @@ document.addEventListener("DOMContentLoaded", UI.displayBooks);
 
 //event: add a book
 document.querySelector("#book-form").addEventListener("submit", (e) => {
-    //no preventDefault?
+    e.preventDefault();
     const title = document.querySelector("#title").value;
-    const author = document.querySelector("#author").value;
-    const isbn = document.querySelector("#isbn").value;
+    const year = document.querySelector("#year").value;
+    const id = document.querySelector("#id").value;
 
     //validate
-    if (title === "" || author === "" || isbn === "") {
+    if (title === "" || year === "" || id === "") {
         UI.showAlert("Please fill in all fields", "danger");
     } else {
         //instantiate book
-        const book = new Book(title, author, isbn);
+        const book = new Book(title, year, id);
         UI.addBookToList(book);
         Store.addBook(book);
         UI.showAlert("Book Added.", "success");
@@ -105,7 +105,6 @@ document.querySelector("#book-form").addEventListener("submit", (e) => {
 //event: remove a book
 document.querySelector("#book-list").addEventListener("click", (e) => {
     UI.deleteBook(e.target);
-
     Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
     UI.showAlert("Book Removed.", "success");
 
